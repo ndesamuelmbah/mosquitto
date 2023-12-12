@@ -361,7 +361,7 @@ int persist__backup(bool shutdown)
 	if (rc != 0) {
 		rc = 0;
 		if (errno != ENOENT) {
-			log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database, unable to remove %s.", outfile);
+			log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database test, unable to remove %s.", outfile);
 			goto error;
 		}
 	}
@@ -369,7 +369,7 @@ int persist__backup(bool shutdown)
 
 	db_fptr = mosquitto__fopen(outfile, "wb", true);
 	if(db_fptr == NULL){
-		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database, unable to open %s for writing.", outfile);
+		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database test, unable to open %s for writing.", outfile);
 		goto error;
 	}
 
@@ -438,7 +438,7 @@ int persist__backup(bool shutdown)
 error:
 	mosquitto__free(outfile);
 	err = strerror(errno);
-	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", err);
+	log__printf(NULL, MOSQ_LOG_ERR, "test Error: %s.", err);
 	if(db_fptr) fclose(db_fptr);
 	return 1;
 }

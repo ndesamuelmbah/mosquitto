@@ -34,6 +34,22 @@ Contributors:
 #include "time_mosq.h"
 #include "util_mosq.h"
 
+//Update this import section to include the header for importing mysql.h
+//#include <mysql/mysql.h>
+#include <../mysql-connector-8_2_0-winx64\include\mysql\jdbc.h>
+
+//C:\Users\samund\source\repos\mosquitto\mysql-connector-8_2_0-winx64\include\mysql\jdbc.h
+
+static char *host   = "localhost";
+static char *user   = "SamuelNde";
+static char *pass   = "24April@91";
+static char *dbname = "MqttMosquittoBroker";
+static char *socket = NULL;
+unsigned int port = 3306;
+unsigned int flags = 0;
+//Use the credentials above to connect to the database dbname on host host using the password pass and the username user and the port port
+//The socket is set to NULL because we are not using a socket to connect to the database
+
 
 int handle__publish(struct mosquitto *mosq)
 {
@@ -170,4 +186,3 @@ int handle__publish(struct mosquitto *mosq)
 			return MOSQ_ERR_PROTOCOL;
 	}
 }
-
