@@ -326,12 +326,12 @@ int persist__backup(bool shutdown)
 	if(db.config->persistence == false) return MOSQ_ERR_SUCCESS;
 	if(db.config->persistence_filepath == NULL) return MOSQ_ERR_INVAL;
 
-	log__printf(NULL, MOSQ_LOG_INFO, "Saving in-memory database test to %s.", db.config->persistence_filepath);
+	log__printf(NULL, MOSQ_LOG_INFO, "Saving in-memory database tests to %s.", db.config->persistence_filepath);
 
 	len = strlen(db.config->persistence_filepath)+5;
 	outfile = mosquitto__malloc(len+1);
 	if(!outfile){
-		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database test, out of memory.");
+		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database tests, out of memory.");
 		return MOSQ_ERR_NOMEM;
 	}
 	snprintf(outfile, len, "%s.new", db.config->persistence_filepath);
@@ -361,7 +361,7 @@ int persist__backup(bool shutdown)
 	if (rc != 0) {
 		rc = 0;
 		if (errno != ENOENT) {
-			log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database test, unable to remove %s.", outfile);
+			log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database tests, unable to remove %s.", outfile);
 			goto error;
 		}
 	}
@@ -369,7 +369,7 @@ int persist__backup(bool shutdown)
 
 	db_fptr = mosquitto__fopen(outfile, "wb", true);
 	if(db_fptr == NULL){
-		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database test, unable to open %s for writing.", outfile);
+		log__printf(NULL, MOSQ_LOG_INFO, "Error saving in-memory database tests, unable to open %s for writing.", outfile);
 		goto error;
 	}
 
@@ -438,7 +438,7 @@ int persist__backup(bool shutdown)
 error:
 	mosquitto__free(outfile);
 	err = strerror(errno);
-	log__printf(NULL, MOSQ_LOG_ERR, "test Error: %s.", err);
+	log__printf(NULL, MOSQ_LOG_ERR, "tests Error: %s.", err);
 	if(db_fptr) fclose(db_fptr);
 	return 1;
 }
