@@ -36,7 +36,7 @@ Contributors:
 
 //Update this import section to include the header for importing mysql.h
 //#include <mysql/mysql.h>
-#include <../mysql-connector-8_2_0-winx64\include\mysql\jdbc.h>
+// #include <../mysql-connector-8_2_0-winx64\include\mysql\jdbc.h>
 
 //C:\Users\samund\source\repos\mosquitto\mysql-connector-8_2_0-winx64\include\mysql\jdbc.h
 
