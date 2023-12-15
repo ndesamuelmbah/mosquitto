@@ -290,7 +290,7 @@ int handle__publish(struct mosquitto *context)
 		//char *payload_str = (char *)msg->payload;
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Starting in src/handle_publish.c last byte fixed %s connecting.",
-			(char *)msg->payload;);
+			(char *)msg->payload);
 		/* Ensure payload is always zero terminated, this is the reason for the extra byte above */
 		log__printf(NULL, MOSQ_LOG_DEBUG,
 					"Gotten payload %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
