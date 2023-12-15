@@ -288,10 +288,10 @@ int handle__publish(struct mosquitto *context)
 			db__msg_store_free(msg);
 			return MOSQ_ERR_NOMEM;
 		}
-		// else{
-		// 	log__printf(NULL, MOSQ_LOG_INFO,
-		// 		"Starting in src/handle_publish.c %s connecting.", payload_str);
-		// }
+		else{
+			log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c malloc %d connecting.", (int*)msg->payload);
+		}
 
 		//This line of code is used to set the last byte of the payload to 0
 		((uint8_t *)msg->payload)[msg->payloadlen] = 0;
