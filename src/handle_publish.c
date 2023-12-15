@@ -278,6 +278,10 @@ int handle__publish(struct mosquitto *context)
 				"Starting in src/handle_publish.c %s connecting.", "Message payload is null");
 			db__msg_store_free(msg);
 			return MOSQ_ERR_NOMEM;
+		}else{
+			char *payload_str = (char *)message->payload;
+			log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", payload_str);
 		}
 		/* Ensure payload is always zero terminated, this is the reason for the extra byte above */
 		log__printf(NULL, MOSQ_LOG_DEBUG,
