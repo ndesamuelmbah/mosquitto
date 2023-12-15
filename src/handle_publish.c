@@ -262,12 +262,18 @@ int handle__publish(struct mosquitto *context)
 	if(msg->payloadlen){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Starting in src/handle_publish.c %s connecting.", "Message has valid payloadlen");
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message has valid payloadlen and allocating memory for payload");
 		if(db.config->message_size_limit && msg->payloadlen > db.config->message_size_limit){
 			log__printf(NULL, MOSQ_LOG_DEBUG, "Dropped too large PUBLISH from %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))", context->id, dup, msg->qos, msg->retain, msg->source_mid, msg->topic, (long)msg->payloadlen);
 			reason_code = MQTT_RC_PACKET_TOO_LARGE;
 			goto process_bad_message;
 		}
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message memory for payload");
 		msg->payload = mosquitto__malloc(msg->payloadlen+1);
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message memory for payload started");
 		if(msg->payload == NULL){log__printf(NULL, MOSQ_LOG_INFO,
 				"Starting in src/handle_publish.c %s connecting.", "Message payload is null");
 			db__msg_store_free(msg);
