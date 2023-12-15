@@ -64,7 +64,7 @@ int handle__publish(struct mosquitto *context)
 	//The first line of code is used to allocate memory for the msg variable
 	msg = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
 	log__printf(NULL, MOSQ_LOG_INFO,
-				"Starting in src/handle_publish.c %s connecting.", "After allocating memory for msg");
+				"Starting in src/handle_publish.c %s, '%s' connecting.", "After allocating memory for msg", msg->topic);
 	if(msg == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
