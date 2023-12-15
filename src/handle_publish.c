@@ -268,7 +268,8 @@ int handle__publish(struct mosquitto *context)
 			goto process_bad_message;
 		}
 		msg->payload = mosquitto__malloc(msg->payloadlen+1);
-		if(msg->payload == NULL){
+		if(msg->payload == NULL){log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message payload is null");
 			db__msg_store_free(msg);
 			return MOSQ_ERR_NOMEM;
 		}
@@ -279,7 +280,10 @@ int handle__publish(struct mosquitto *context)
 					(long)msg->payloadlen);
 		((uint8_t *)msg->payload)[msg->payloadlen] = 0;
 
-		if(packet__read_bytes(&context->in_packet, msg->payload, msg->payloadlen)){
+		//What does this line of code do?
+		//This line of code is used to read the payload from the packet
+		if(packet__read_bytes(&context->in_packet, msg->payload, msg->payloadlen)){log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Read payload in packet__read_bytes");
 			db__msg_store_free(msg);
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
@@ -294,7 +298,8 @@ int handle__publish(struct mosquitto *context)
 				(long)msg->payloadlen);
 		reason_code = MQTT_RC_NOT_AUTHORIZED;
 		goto process_bad_message;
-	}else if(rc != MOSQ_ERR_SUCCESS){
+	}else if(rc != MOSQ_ERR_SUCCESS){log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "No access to topic");
 		db__msg_store_free(msg);
 		return rc;
 	}
@@ -410,6 +415,8 @@ int handle__publish(struct mosquitto *context)
 	db__message_write_queued_in(context);
 	return rc;
 process_bad_message:
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Processing bad message");
 	rc = 1;
 	if(msg){
 		switch(msg->qos){
