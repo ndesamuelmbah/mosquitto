@@ -229,10 +229,10 @@ int connect__on_authorised(struct mosquitto *context, void *auth_data_out, uint1
 			}
 		}else{
 			if(context->username){
-				log__printf(NULL, MOSQ_LOG_NOTICE, "New client connected from %s:%d as %s (p%d, c%d, k%d, u'%s').",
+				log__printf(NULL, MOSQ_LOG_NOTICE, "New client connected from test %s:%d as %s (p%d, c%d, k%d, u'%s').",
 						context->address, context->remote_port, context->id, context->protocol, context->clean_start, context->keepalive, context->username);
 			}else{
-				log__printf(NULL, MOSQ_LOG_NOTICE, "New client connected from %s:%d as %s (p%d, c%d, k%d).",
+				log__printf(NULL, MOSQ_LOG_NOTICE, "New client connected from test %s:%d as %s (p%d, c%d, k%d).",
 						context->address, context->remote_port, context->id, context->protocol, context->clean_start, context->keepalive);
 			}
 		}
