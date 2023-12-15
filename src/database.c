@@ -263,6 +263,8 @@ void db__msg_store_free(struct mosquitto_msg_store *store)
 {
 	int i;
 
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c Freeing store memory %s - %s.", store->payload, store->topic);
 	mosquitto__free(store->source_id);
 	mosquitto__free(store->source_username);
 	if(store->dest_ids){
