@@ -288,8 +288,11 @@ int handle__publish(struct mosquitto *context)
 					"Gotten payload %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
 					context->id, dup, msg->qos, msg->retain, msg->source_mid, msg->topic,
 					(long)msg->payloadlen);
+		//This line of code is used to set the last byte of the payload to 0
 		((uint8_t *)msg->payload)[msg->payloadlen] = 0;
-
+		char *payload_str = (char *)msg->payload;
+			log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c last byte fixed %s connecting.", payload_str);
 		//What does this line of code do?
 		//This line of code is used to read the payload from the packet
 		if(packet__read_bytes(&context->in_packet, msg->payload, msg->payloadlen)){log__printf(NULL, MOSQ_LOG_INFO,
