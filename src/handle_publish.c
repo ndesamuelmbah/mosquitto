@@ -54,15 +54,19 @@ int handle__publish(struct mosquitto *context)
 	uint8_t reason_code = 0;
 	uint16_t mid = 0;
 
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Invalid QoS in PUBLISH from %s, disconnecting.", "handling publish");
 	if(context->state != mosq_cs_active){
 		return MOSQ_ERR_PROTOCOL;
 	}
 
+	//The first line of code is used to allocate memory for the msg variable
 	msg = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
 	if(msg == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
-
+	//The first line of code is used to set the dup flag to 0
+	//The second line of code is used to set the qos flag to 0
 	dup = (header & 0x08)>>3;
 	msg->qos = (header & 0x06)>>1;
 	if(dup == 1 && msg->qos == 0){
@@ -236,6 +240,10 @@ int handle__publish(struct mosquitto *context)
 			return MOSQ_ERR_NOMEM;
 		}
 		/* Ensure payload is always zero terminated, this is the reason for the extra byte above */
+		log__printf(NULL, MOSQ_LOG_DEBUG,
+					"Gotten payload %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes), %s)",
+					context->id, dup, msg->qos, msg->retain, msg->source_mid, msg->topic,
+					(long)msg->payloadlen, msg->payload);
 		((uint8_t *)msg->payload)[msg->payloadlen] = 0;
 
 		if(packet__read_bytes(&context->in_packet, msg->payload, msg->payloadlen)){
@@ -389,4 +397,3 @@ process_bad_message:
 	}
 	return rc;
 }
-
