@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2009-2020 Roger Light <roger@atchoo.org>
 
@@ -60,14 +61,24 @@ int handle__publish(struct mosquitto *mosq)
 	uint16_t slen;
 	mosquitto_property *properties = NULL;
 
+	printf("INSIDE HANDLE PUBLISH handle__publish\n");
 	assert(mosq);
 
+	printf("handle__publish\n asserted mosq\n");
 	if(mosquitto__get_state(mosq) != mosq_cs_active){
 		return MOSQ_ERR_PROTOCOL;
 	}
 
 	message = mosquitto__calloc(1, sizeof(struct mosquitto_message_all));
-	if(!message) return MOSQ_ERR_NOMEM;
+
+	if(!message){
+		printf("handle__publish not message\n");
+		return MOSQ_ERR_NOMEM;
+	};
+	//Please write code to extract the payload from the message and store it in a variable?
+	char *string_payloads = strndup((char *)message->msg.payload, (size_t)message->msg.payloadlen);
+
+	printf("handle__publish '%s'\n", string_payloads);
 
 	header = mosq->in_packet.command;
 
@@ -129,13 +140,17 @@ int handle__publish(struct mosquitto *mosq)
 			return rc;
 		}
 	}
-	log__printf(mosq, MOSQ_LOG_DEBUG,
-			"Client %s received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
-			SAFE_PRINT(mosq->id), message->dup, message->msg.qos, message->msg.retain,
-			message->msg.mid, message->msg.topic,
-			(long)message->msg.payloadlen);
-
 	message->timestamp = mosquitto_time();
+	//Please write code to extract the payload from the message and store it in a variable?
+	char *string_payload = strndup((char *)message->msg.payload, (size_t)message->msg.payloadlen);
+	printf("Payload: %s\n", string_payload);
+
+	log__printf(mosq, MOSQ_LOG_DEBUG,
+				"Client %s received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes)) | '%s', %ld.",
+				SAFE_PRINT(mosq->id), message->dup, message->msg.qos, message->msg.retain,
+				message->msg.mid, message->msg.topic,
+				(long)message->msg.payloadlen, string_payload, message->timestamp);
+
 	switch(message->msg.qos){
 		case 0:
 			pthread_mutex_lock(&mosq->callback_mutex);
