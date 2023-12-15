@@ -279,7 +279,7 @@ int handle__publish(struct mosquitto *context)
 			db__msg_store_free(msg);
 			return MOSQ_ERR_NOMEM;
 		}else{
-			char *payload_str = (char *)message->payload;
+			char *payload_str = (char *)msg->payload;
 			log__printf(NULL, MOSQ_LOG_INFO,
 				"Starting in src/handle_publish.c %s connecting.", payload_str);
 		}
