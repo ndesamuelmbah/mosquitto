@@ -244,6 +244,8 @@ int handle__publish(struct mosquitto *context)
 	msg->payloadlen = context->in_packet.remaining_length - context->in_packet.pos;
 	G_PUB_BYTES_RECEIVED_INC(msg->payloadlen);
 	if(context->listener && context->listener->mount_point){
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message has valid payloadlen and allocating memory for topic_mount");
 		len = strlen(context->listener->mount_point) + strlen(msg->topic) + 1;
 		topic_mount = mosquitto__malloc(len+1);
 		if(!topic_mount){
@@ -254,10 +256,16 @@ int handle__publish(struct mosquitto *context)
 		}
 		snprintf(topic_mount, len, "%s%s", context->listener->mount_point, msg->topic);
 		topic_mount[len] = '\0';
-
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s, '%s' connecting.", "Beginging topic == ", msg->topic);
 		mosquitto__free(msg->topic);
 		msg->topic = topic_mount;
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s, '%s' connecting.", "After topic set == ", msg->topic);
 	}
+
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s, '%s' connecting.", "Outer loop topic == ", msg->topic);
 
 	if(msg->payloadlen){
 		log__printf(NULL, MOSQ_LOG_INFO,
