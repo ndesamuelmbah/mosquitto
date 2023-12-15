@@ -33,7 +33,8 @@ Contributors:
 #include "sys_tree.h"
 #include "util_mosq.h"
 
-
+//Where is this function called from?
+//This function is called from lib/handle_publish.c
 int handle__publish(struct mosquitto *context)
 {
 	uint8_t dup;
@@ -62,6 +63,8 @@ int handle__publish(struct mosquitto *context)
 
 	//The first line of code is used to allocate memory for the msg variable
 	msg = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "After allocating memory for msg");
 	if(msg == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
@@ -69,18 +72,25 @@ int handle__publish(struct mosquitto *context)
 	//The second line of code is used to set the qos flag to 0
 	dup = (header & 0x08)>>3;
 	msg->qos = (header & 0x06)>>1;
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "After setting dup and qos");
 	if(dup == 1 && msg->qos == 0){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Invalid PUBLISH (QoS=0 and DUP=1) from %s, disconnecting.", context->id);
 		db__msg_store_free(msg);
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
+
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Verified that dup and qos are valid");
 	if(msg->qos == 3){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Invalid QoS in PUBLISH from %s, disconnecting.", context->id);
 		db__msg_store_free(msg);
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Verified that qos is valid");
 	if(msg->qos > context->max_qos){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Too high QoS in PUBLISH from %s, disconnecting.", context->id);
@@ -88,22 +98,29 @@ int handle__publish(struct mosquitto *context)
 		return MOSQ_ERR_QOS_NOT_SUPPORTED;
 	}
 	msg->retain = (header & 0x01);
-
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Set retain flag");
 	if(msg->retain && db.config->retain_available == false){
 		db__msg_store_free(msg);
 		return MOSQ_ERR_RETAIN_NOT_SUPPORTED;
 	}
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Checked retain flag and db.config->retain_available");
 
 	if(packet__read_string(&context->in_packet, &msg->topic, &slen)){
 		db__msg_store_free(msg);
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Read topic");
 	if(!slen && context->protocol != mosq_p_mqtt5){
 		/* Invalid publish topic, disconnect client. */
 		db__msg_store_free(msg);
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Verified protocol");
 	if(msg->qos > 0){
 		if(packet__read_uint16(&context->in_packet, &mid)){
 			db__msg_store_free(msg);
@@ -118,6 +135,8 @@ int handle__publish(struct mosquitto *context)
 		msg->source_mid = mid;
 	}
 
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Check that qos is valid > 0");
 	/* Handle properties */
 	if(context->protocol == mosq_p_mqtt5){
 		rc = property__read_all(CMD_PUBLISH, &context->in_packet, &properties);
@@ -179,10 +198,18 @@ int handle__publish(struct mosquitto *context)
 	}
 	mosquitto_property_free_all(&properties);
 
+	log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Handled properties and freed them");
 	if(topic_alias == 0 || (context->listener && topic_alias > context->listener->max_topic_alias)){
 		db__msg_store_free(msg);
+
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Topic alias is invalid");
 		return MOSQ_ERR_TOPIC_ALIAS_INVALID;
+
 	}else if(topic_alias > 0){
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Topic alias > 0");
 		if(msg->topic){
 			rc = alias__add(context, msg->topic, (uint16_t)topic_alias);
 			if(rc){
@@ -208,6 +235,8 @@ int handle__publish(struct mosquitto *context)
 #endif
 	if(mosquitto_pub_topic_check(msg->topic) != MOSQ_ERR_SUCCESS){
 		/* Invalid publish topic, just swallow it. */
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "invalid publish topic");
 		db__msg_store_free(msg);
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
@@ -218,6 +247,8 @@ int handle__publish(struct mosquitto *context)
 		len = strlen(context->listener->mount_point) + strlen(msg->topic) + 1;
 		topic_mount = mosquitto__malloc(len+1);
 		if(!topic_mount){
+			log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "!topic_mount");
 			db__msg_store_free(msg);
 			return MOSQ_ERR_NOMEM;
 		}
@@ -229,6 +260,8 @@ int handle__publish(struct mosquitto *context)
 	}
 
 	if(msg->payloadlen){
+		log__printf(NULL, MOSQ_LOG_INFO,
+				"Starting in src/handle_publish.c %s connecting.", "Message has valid payloadlen");
 		if(db.config->message_size_limit && msg->payloadlen > db.config->message_size_limit){
 			log__printf(NULL, MOSQ_LOG_DEBUG, "Dropped too large PUBLISH from %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))", context->id, dup, msg->qos, msg->retain, msg->source_mid, msg->topic, (long)msg->payloadlen);
 			reason_code = MQTT_RC_PACKET_TOO_LARGE;

@@ -34,6 +34,8 @@ Contributors:
 #include "send_mosq.h"
 #include "time_mosq.h"
 #include "util_mosq.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 //Update this import section to include the header for importing mysql.h
 //#include <mysql/mysql.h>
@@ -41,10 +43,7 @@ Contributors:
 
 //C:\Users\samund\source\repos\mosquitto\mysql-connector-8_2_0-winx64\include\mysql\jdbc.h
 
-static char *host   = "localhost";
-static char *user   = "SamuelNde";
-static char *pass   = "24April@91";
-static char *dbname = "MqttMosquittoBroker";
+
 static char *socket = NULL;
 unsigned int port = 3306;
 unsigned int flags = 0;
@@ -54,6 +53,11 @@ unsigned int flags = 0;
 
 int handle__publish(struct mosquitto *mosq)
 {
+
+	const char *user = getenv("DbUser");
+	const char *password = getenv("DbPass");
+	const char *host = getenv("DbHost");
+	const char *database = getenv("DbDatabase");
 	uint8_t header;
 	struct mosquitto_message_all *message;
 	int rc = 0;
