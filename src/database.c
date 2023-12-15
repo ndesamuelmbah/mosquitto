@@ -263,7 +263,7 @@ void db__msg_store_free(struct mosquitto_msg_store *store)
 {
 	int i;
 	//Write an if statement that checks if the topic starts with $SYS
-	if(strncmp(store->topic, "$SYS", 4) != '$'){
+	if(strncmp(store->topic, "$SYS", 4) != 0){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Starting in src/handle_publish.c Freeing store memory %s - %s.", store->payload, store->topic);
 	}
