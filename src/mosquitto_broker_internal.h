@@ -373,7 +373,7 @@ struct mosquitto_msg_store{
 	int ref_count;
 	char* topic;
 	mosquitto_property *properties;
-	void *payload;
+	char *payload;
 	time_t message_expiry_time;
 	uint32_t payloadlen;
 	enum mosquitto_msg_origin origin;
